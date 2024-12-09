@@ -15,22 +15,35 @@ struct Node* createNode(int data) {
     return newNode;
 }
 
-// Function to find the middle node of the linked list
-struct Node* findMiddle(struct Node* head) {
-    if (head == NULL) return NULL;
+// Function to delete all occurrences of a given key in the linked list
+struct Node* deleteKey(struct Node* head, int key) {
+    struct Node* temp = head;
+    struct Node* prev = NULL;
 
-    struct Node* slow = head;
-    struct Node* fast = head;
-
-    while (fast != NULL && fast->next != NULL) {
-        slow = slow->next;
-        fast = fast->next->next;
+    // Remove nodes with the key at the head
+    while (temp != NULL && temp->data == key) {
+        head = temp->next; // Move the head
+        free(temp);        // Free the old head
+        temp = head;       // Update temp
     }
 
-    return slow;
+    // Traverse the rest of the list
+    while (temp != NULL) {
+        // If the current node has the key
+        if (temp->data == key) {
+            prev->next = temp->next; // Unlink the node
+            free(temp);              // Free the memory
+            temp = prev->next;       // Move to the next node
+        } else {
+            prev = temp;             // Update previous node
+            temp = temp->next;       // Move to the next node
+        }
+    }
+
+    return head;
 }
 
-// Function to print a linked list
+// Function to print the linked list
 void printList(struct Node* head) {
     while (head != NULL) {
         printf("%d -> ", head->data);
@@ -41,23 +54,22 @@ void printList(struct Node* head) {
 
 // Example usage
 int main() {
-    // Create a linked list: 1 -> 2 -> 3 -> 4 -> 5
+    // Create a linked list: 1 -> 2 -> 3 -> 2 -> 4 -> 2
     struct Node* head = createNode(1);
     head->next = createNode(2);
     head->next->next = createNode(3);
-    head->next->next->next = createNode(4);
-    head->next->next->next->next = createNode(5);
+    head->next->next->next = createNode(2);
+    head->next->next->next->next = createNode(4);
+    head->next->next->next->next->next = createNode(2);
 
     printf("Original list: ");
     printList(head);
 
-    struct Node* middle = findMiddle(head);
+    int key = 2;
+    head = deleteKey(head, key);
 
-    if (middle) {
-        printf("Middle node: %d\n", middle->data);
-    } else {
-        printf("The list is empty.\n");
-    }
+    printf("Modified list after deleting %d: ", key);
+    printList(head);
 
     return 0;
 }
