@@ -17,6 +17,25 @@ TreeNode* createNode(int val) {
     return newNode;
 }
 
+TreeNode* buildTree() {
+    int val;
+    printf("Enter node value (-1 for NULL): ");
+    scanf("%d", &val);
+
+    if (val == -1) {
+        return NULL; // Null node
+    }
+
+    TreeNode* root = createNode(val);
+    printf("Enter left child of %d\n", val);
+    root->left = buildTree();
+
+    printf("Enter right child of %d\n", val);
+    root->right = buildTree();
+
+    return root;
+}
+
 // Inorder traversal (Left, Root, Right)
 void inorderTraversal(TreeNode* root) {
     if (root == NULL) return;
@@ -43,14 +62,8 @@ void postorderTraversal(TreeNode* root) {
 
 // Main function to test the implementation
 int main() {
-    // Create a sample binary tree
-    TreeNode* root = createNode(1);
-    root->left = createNode(2);
-    root->right = createNode(3);
-    root->left->left = createNode(4);
-    root->left->right = createNode(5);
-    root->right->left = createNode(6);
-    root->right->right = createNode(7);
+    printf("Build the binary tree:\n");
+    TreeNode* root = buildTree();
 
     // Perform tree traversals
     printf("Inorder Traversal: ");
@@ -64,15 +77,6 @@ int main() {
     printf("Postorder Traversal: ");
     postorderTraversal(root);
     printf("\n");
-
-    // Free memory (optional for small programs)
-    free(root->left->left);
-    free(root->left->right);
-    free(root->right->left);
-    free(root->right->right);
-    free(root->left);
-    free(root->right);
-    free(root);
 
     return 0;
 }
