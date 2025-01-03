@@ -17,6 +17,25 @@ TreeNode* createNode(int val) {
     return newNode;
 }
 
+// Function to dynamically create a binary tree
+TreeNode* createTree() {
+    int val;
+    printf("Enter node value (-1 for NULL): ");
+    scanf("%d", &val);
+
+    if (val == -1) {
+        return NULL; // NULL indicates no node
+    }
+
+    TreeNode* root = createNode(val);
+    printf("Entering left child of %d:\n", val);
+    root->left = createTree(); // Recursively create the left subtree
+    printf("Entering right child of %d:\n", val);
+    root->right = createTree(); // Recursively create the right subtree
+
+    return root;
+}
+
 // Function to calculate the height of the tree recursively
 int findHeight(TreeNode* root) {
     if (root == NULL) return -1; // Return -1 for an empty tree (height in terms of edges)
@@ -27,26 +46,14 @@ int findHeight(TreeNode* root) {
 
 // Main function to test the implementation
 int main() {
-    // Create a sample binary tree
-    TreeNode* root = createNode(1);
-    root->left = createNode(2);
-    root->right = createNode(3);
-    root->left->left = createNode(4);
-    root->left->right = createNode(5);
-    root->right->left = createNode(6);
-    root->right->right = createNode(7);
+    printf("Create your binary tree:\n");
+    TreeNode* root = createTree();
 
     // Find and print the height of the binary tree
     int height = findHeight(root);
     printf("Height of the binary tree: %d\n", height);
 
-    // Free memory (optional for small programs)
-    free(root->left->left);
-    free(root->left->right);
-    free(root->right->left);
-    free(root->right->right);
-    free(root->left);
-    free(root->right);
+    // Free memory (optional for small programs, but good practice)
     free(root);
 
     return 0;
