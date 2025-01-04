@@ -1,161 +1,160 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#define RED 0
-#define BLACK 1
+enum Color { RED, BLACK };
 
 struct Node {
     int data;
-    int color;  // 0 -> Red, 1 -> Black
     struct Node *left;
     struct Node *right;
     struct Node *parent;
-}*root = NULL;
+    enum Color color;
+} *root = NULL, *TNULL;
 
-// Function to create a new node
-struct Node* createNode(int val) {
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
-    newNode->data = val;
-    newNode->color = RED;  // New nodes are always red
-    newNode->left = newNode->right = newNode->parent = NULL;
-    return newNode;
+void initializeTNULL() {
+    TNULL = (struct Node*)malloc(sizeof(struct Node));
+    TNULL->color = BLACK;
+    TNULL->left = NULL;
+    TNULL->right = NULL;
+    TNULL->parent = NULL;
 }
 
-// Right rotation function
-void rotateRight(struct Node** root, struct Node* x) {
-    struct Node* y = x->left;
-    x->left = y->right;
-    
-    if (y->right != NULL) {
-        y->right->parent = x;
-    }
-    
-    y->parent = x->parent;
-    if (x->parent == NULL) {
-        *root = y;
-    } else if (x == x->parent->right) {
-        x->parent->right = y;
-    } else {
-        x->parent->left = y;
-    }
-    
-    y->right = x;
-    x->parent = y;
-}
-
-// Left rotation function
-void rotateLeft(struct Node** root, struct Node* x) {
-    struct Node* y = x->right;
+void leftRotate(struct Node *x) {
+    struct Node *y = x->right;
     x->right = y->left;
-    
-    if (y->left != NULL) {
+    if (y->left != TNULL) {
         y->left->parent = x;
     }
-    
     y->parent = x->parent;
     if (x->parent == NULL) {
-        *root = y;
+        root = y;
     } else if (x == x->parent->left) {
         x->parent->left = y;
     } else {
         x->parent->right = y;
     }
-    
     y->left = x;
     x->parent = y;
 }
 
-// Fix violation of Red-Black Tree properties after insertion
-void fixInsertion(struct Node** root, struct Node* z) {
-    while (z != *root && z->parent->color == RED) {
-        if (z->parent == z->parent->parent->left) {
-            struct Node* y = z->parent->parent->right;
-            
-            if (y != NULL && y->color == RED) {
-                // Case 1: Uncle is red
-                z->parent->color = BLACK;
-                y->color = BLACK;
-                z->parent->parent->color = RED;
-                z = z->parent->parent;
-            } else {
-                // Case 2 and Case 3: Uncle is black
-                if (z == z->parent->right) {
-                    z = z->parent;
-                    rotateLeft(root, z);
-                }
-                
-                z->parent->color = BLACK;
-                z->parent->parent->color = RED;
-                rotateRight(root, z->parent->parent);
-            }
-        } else {
-            struct Node* y = z->parent->parent->left;
-            
-            if (y != NULL && y->color == RED) {
-                // Case 1: Uncle is red
-                z->parent->color = BLACK;
-                y->color = BLACK;
-                z->parent->parent->color = RED;
-                z = z->parent->parent;
-            } else {
-                // Case 2 and Case 3: Uncle is black
-                if (z == z->parent->left) {
-                    z = z->parent;
-                    rotateRight(root, z);
-                }
-                
-                z->parent->color = BLACK;
-                z->parent->parent->color = RED;
-                rotateLeft(root, z->parent->parent);
-            }
-        }
+void rightRotate(struct Node *x) {
+    struct Node *y = x->left;
+    x->left = y->right;
+    if (y->right != TNULL) {
+        y->right->parent = x;
     }
-    
-    (*root)->color = BLACK;
+    y->parent = x->parent;
+    if (x->parent == NULL) {
+        root = y;
+    } else if (x == x->parent->right) {
+        x->parent->right = y;
+    } else {
+        x->parent->left = y;
+    }
+    y->right = x;
+    x->parent = y;
 }
 
-// Insertion function
-void insert(struct Node** root, int val) {
-    struct Node* z = createNode(val);
-    struct Node* y = NULL;
-    struct Node* x = *root;
-    
-    while (x != NULL) {
+void fixInsert(struct Node *k) {
+    struct Node *u;
+    while (k->parent->color == RED) {
+        if (k->parent == k->parent->parent->right) {
+            u = k->parent->parent->left;
+            if (u->color == RED) {
+                u->color = BLACK;
+                k->parent->color = BLACK;
+                k->parent->parent->color = RED;
+                k = k->parent->parent;
+            } else {
+                if (k == k->parent->left) {
+                    k = k->parent;
+                    rightRotate(k);
+                }
+                k->parent->color = BLACK;
+                k->parent->parent->color = RED;
+                leftRotate(k->parent->parent);
+            }
+        } else {
+            u = k->parent->parent->right;
+            if (u->color == RED) {
+                u->color = BLACK;
+                k->parent->color = BLACK;
+                k->parent->parent->color = RED;
+                k = k->parent->parent;
+            } else {
+                if (k == k->parent->right) {
+                    k = k->parent;
+                    leftRotate(k);
+                }
+                k->parent->color = BLACK;
+                k->parent->parent->color = RED;
+                rightRotate(k->parent->parent);
+            }
+        }
+        if (k == root) {
+            break;
+        }
+    }
+    root->color = BLACK;
+}
+
+void insert(int key) {
+    struct Node *node = (struct Node*)malloc(sizeof(struct Node));
+    node->parent = NULL;
+    node->data = key;
+    node->left = TNULL;
+    node->right = TNULL;
+    node->color = RED;
+
+    struct Node *y = NULL;
+    struct Node *x = root;
+
+    while (x != TNULL) {
         y = x;
-        if (z->data < x->data) {
+        if (node->data < x->data) {
             x = x->left;
         } else {
             x = x->right;
         }
     }
-    
-    z->parent = y;
-    
+
+    node->parent = y;
     if (y == NULL) {
-        *root = z;  // Tree was empty
-    } else if (z->data < y->data) {
-        y->left = z;
+        root = node;
+    } else if (node->data < y->data) {
+        y->left = node;
     } else {
-        y->right = z;
+        y->right = node;
     }
-    
-    fixInsertion(root, z);
+
+    if (node->parent == NULL) {
+        node->color = BLACK;
+        return;
+    }
+
+    if (node->parent->parent == NULL) {
+        return;
+    }
+
+    fixInsert(node);
 }
 
-// Inorder Traversal (used for display)
-void inorder(struct Node* node) {
-    if (node == NULL) return;
-    inorder(node->left);
-    printf("%d ", node->data);
-    inorder(node->right);
+void inorder(struct Node *node) {
+    if (node != TNULL) {
+        inorder(node->left);
+        printf("%d ", node->data);
+        inorder(node->right);
+    }
 }
 
 int main() {
+    initializeTNULL();
+
     int val;
     do {
         scanf("%d", &val);
         if (val != -1)
-            insert(&root, val);
+            insert(val);
     } while (val != -1);
 
     printf("Inorder Traversal: ");
