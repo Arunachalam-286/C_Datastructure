@@ -16,36 +16,15 @@ struct Node* createNode(int val) {
     return newnode;
 }
 
-// Function to insert nodes dynamically (level order insertion)
-void insert(struct Node **node) {
-    int val;
-    printf("Enter root node value: ");
-    scanf("%d", &val);
-    *node = createNode(val);
-
-    struct Node *queue[100];
-    int front = 0, rear = 0;
-
-    queue[rear++] = *node;
-
-    while (front < rear) {
-        struct Node *current = queue[front++];
-        int leftVal, rightVal;
-
-        printf("Enter left child of %d (-1 for NULL): ", current->data);
-        scanf("%d", &leftVal);
-        if (leftVal != -1) {
-            current->left = createNode(leftVal);
-            queue[rear++] = current->left;
-        }
-
-        printf("Enter right child of %d (-1 for NULL): ", current->data);
-        scanf("%d", &rightVal);
-        if (rightVal != -1) {
-            current->right = createNode(rightVal);
-            queue[rear++] = current->right;
-        }
-    }
+// Function to insert values manually for symmetry
+void insertManual() {
+    root = createNode(1);
+    root->left = createNode(2);
+    root->right = createNode(2);
+    root->left->left = createNode(3);
+    root->left->right = createNode(4);
+    root->right->left = createNode(4);
+    root->right->right = createNode(3);
 }
 
 // Function to check if two trees are mirror images
@@ -77,8 +56,8 @@ void inorder(struct Node *node) {
 }
 
 int main() {
-    // Dynamically insert nodes
-    insert(&root);
+    // Create a symmetric binary tree manually
+    insertManual();
 
     printf("Inorder Traversal: ");
     inorder(root);
