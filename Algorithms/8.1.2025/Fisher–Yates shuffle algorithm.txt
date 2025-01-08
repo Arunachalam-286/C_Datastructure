@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+} *head = NULL;
+
+void append(int val) {
+    // Create a memory for the node
+    struct Node *newnode = (struct Node *)malloc(sizeof(struct Node));
+    // Initialize the node memory
+    newnode->data = val;
+    newnode->next = NULL;
+
+    // Check for first node connection (head to first node)
+    if (head == NULL) {
+        head = newnode;
+    } else {
+        struct Node *temp = head;
+        // Find the last node
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newnode;
+    }
+}
+
+void display() {
+    struct Node *temp = head;
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+void fisherYatesShuffle(int *array, int n) {
+    srand(time(0)); // Seed the random number generator
+    for (int i = n - 1; i > 0; i--) {
+        int j = rand() % (i + 1); // Generate a random index
+        // Swap array[i] with array[j]
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
+
+void shuffleLinkedList() {
+    // Step 1: Count the number of nodes
+    int count = 0;
+    struct Node *temp = head;
+    while (temp != NULL) {
+        count++;
+        temp = temp->next;
+    }
+
+    if (count <= 1) return; // No shuffling needed for 0 or 1 node
+
+    // Step 2: Copy linked list values into an array
+    int *array = (int *)malloc(count * sizeof(int));
+    temp = head;
+    for (int i = 0; i < count; i++) {
+        array[i] = temp->data;
+        temp = temp->next;
+    }
+
+    // Step 3: Shuffle the array
+    fisherYatesShuffle(array, count);
+
+    // Step 4: Copy the shuffled values back to the linked list
+    temp = head;
+    for (int i = 0; i < count; i++) {
+        temp->data = array[i];
+        temp = temp->next;
+    }
+
+    free(array); // Free the allocated memory
+}
+
+int main() {
+    int val;
+    do {
+        scanf("%d", &val);
+        if (val != -1)
+            append(val);
+    } while (val != -1);
+
+    printf("Original list: ");
+    display();
+
+    shuffleLinkedList();
+
+    printf("Shuffled list: ");
+    display();
+
+    return 0;
+}

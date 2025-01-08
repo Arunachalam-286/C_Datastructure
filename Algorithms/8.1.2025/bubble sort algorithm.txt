@@ -1,0 +1,138 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+struct Node
+{
+    int data;
+    struct Node *next;
+}*head = NULL;
+
+void append(int val)
+{
+    struct Node *newnode = (struct Node*)malloc(sizeof(struct Node));
+    newnode->data = val;
+    newnode->next = NULL;
+
+    if(head == NULL)
+    {
+        head = newnode;
+    }
+    else
+    {
+        struct Node *temp = head;
+        while(temp->next != NULL)
+        {
+            temp = temp->next;
+        }
+        temp->next = newnode;
+    }
+}
+
+void display()
+{
+    struct Node *temp = head;
+    while(temp != NULL)
+    {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+// Iterative Bubble Sort
+void bubbleSortIterative()
+{
+    if(head == NULL || head->next == NULL)
+        return;  // Empty or single node, no need to sort.
+
+    int swapped;
+    struct Node *i, *j;
+    do
+    {
+        swapped = 0;
+        i = head;
+        while(i != NULL && i->next != NULL)
+        {
+            j = i->next;
+            if(i->data > j->data)
+            {
+                // Swap data
+                int temp = i->data;
+                i->data = j->data;
+                j->data = temp;
+                swapped = 1;
+            }
+            i = i->next;
+        }
+    } while(swapped);  // Continue until no swaps are done
+}
+
+// Recursive Bubble Sort Helper Function
+void bubbleSortRecursiveHelper(struct Node* end)
+{
+    if(end == NULL || end->next == NULL)
+        return;
+
+    struct Node *i = head;
+    while(i != end && i->next != end)
+    {
+        struct Node *j = i->next;
+        if(i->data > j->data)
+        {
+            // Swap data
+            int temp = i->data;
+            i->data = j->data;
+            j->data = temp;
+        }
+        i = i->next;
+    }
+    // Recursively call the function for the sublist excluding the last sorted element
+    bubbleSortRecursiveHelper(end->next);
+}
+
+// Recursive Bubble Sort
+void bubbleSortRecursive()
+{
+    if(head == NULL || head->next == NULL)
+        return;  // Empty or single node, no need to sort.
+
+    // Start the recursive sorting
+    bubbleSortRecursiveHelper(head);
+}
+
+int main()
+{
+    int val;
+    printf("Enter values for the linked list (-1 to stop):\n");
+    do
+    {
+        scanf("%d", &val);
+        if(val != -1)
+            append(val);
+    } while(val != -1);
+
+    printf("Original List:\n");
+    display();
+
+    // Iterative Bubble Sort
+    bubbleSortIterative();
+    printf("Sorted List (Iterative):\n");
+    display();
+
+    // To demonstrate the recursive sorting, we will re-create the list
+    printf("Enter values again for the linked list (-1 to stop):\n");
+    head = NULL;  // Clear the list
+    do
+    {
+        scanf("%d", &val);
+        if(val != -1)
+            append(val);
+    } while(val != -1);
+
+    // Recursive Bubble Sort
+    bubbleSortRecursive();
+    printf("Sorted List (Recursive):\n");
+    display();
+
+    return 0;
+}
