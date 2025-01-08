@@ -1,0 +1,81 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<stdbool.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+}*head = NULL;
+
+// Function to append a new value to the linked list
+void append(int val) {
+    struct Node *newnode = (struct Node*)malloc(sizeof(struct Node));
+    newnode->data = val;
+    newnode->next = NULL;
+
+    if(head == NULL) {
+        head = newnode;
+    } else {
+        struct Node *temp = head;
+        while(temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newnode;
+    }
+}
+
+// Function to display the linked list
+void display() {
+    struct Node *temp = head;
+    while(temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+// Function to find the duplicate element
+int findDuplicate() {
+    struct Node *temp = head;
+    while(temp != NULL) {
+        int index = abs(temp->data); // Get the index based on the element's value
+
+        // Use the value of the current node as the index and check for a negative mark
+        struct Node *current = head;
+        for (int i = 1; i < index; i++) {
+            current = current->next; // Traverse to the index node
+        }
+
+        if (current->data < 0) {
+            return index; // Duplicate found
+        }
+
+        current->data = -current->data; // Mark as visited
+        temp = temp->next;
+    }
+
+    return -1; // No duplicate found
+}
+
+int main() {
+    int val;
+    printf("Enter elements of the array (-1 to stop):\n");
+    do {
+        scanf("%d", &val);
+        if(val != -1) {
+            append(val);
+        }
+    } while(val != -1);
+
+    printf("The elements in the linked list are:\n");
+    display();
+
+    int duplicate = findDuplicate();
+    if(duplicate != -1) {
+        printf("The duplicate element is %d\n", duplicate);
+    } else {
+        printf("No duplicate found.\n");
+    }
+
+    return 0;
+}
