@@ -39,32 +39,37 @@ void display()
     printf("\n");
 }
 
-// Iterative Bubble Sort
-void bubbleSortIterative()
+// Recursive Bubble Sort Helper Function
+void bubbleSortRecursiveHelper(struct Node* end)
+{
+    if(end == NULL || end->next == NULL)
+        return;
+
+    struct Node *i = head;
+    while(i != end && i->next != end)
+    {
+        struct Node *j = i->next;
+        if(i->data > j->data)
+        {
+            // Swap data
+            int temp = i->data;
+            i->data = j->data;
+            j->data = temp;
+        }
+        i = i->next;
+    }
+    // Recursively call the function for the sublist excluding the last sorted element
+    bubbleSortRecursiveHelper(end->next);
+}
+
+// Recursive Bubble Sort
+void bubbleSortRecursive()
 {
     if(head == NULL || head->next == NULL)
         return;  // Empty or single node, no need to sort.
 
-    int swapped;
-    struct Node *i, *j;
-    do
-    {
-        swapped = 0;
-        i = head;
-        while(i != NULL && i->next != NULL)
-        {
-            j = i->next;
-            if(i->data > j->data)
-            {
-                // Swap data
-                int temp = i->data;
-                i->data = j->data;
-                j->data = temp;
-                swapped = 1;
-            }
-            i = i->next;
-        }
-    } while(swapped);  // Continue until no swaps are done
+    // Start the recursive sorting
+    bubbleSortRecursiveHelper(head);
 }
 
 int main()
@@ -81,10 +86,7 @@ int main()
     printf("Original List:\n");
     display();
 
-    // Iterative Bubble Sort
-    bubbleSortIterative();
-    printf("Sorted List (Iterative):\n");
-    display();
+    
 
     // To demonstrate the recursive sorting, we will re-create the list
     printf("Enter values again for the linked list (-1 to stop):\n");
@@ -95,6 +97,11 @@ int main()
         if(val != -1)
             append(val);
     } while(val != -1);
+
+    // Recursive Bubble Sort
+    bubbleSortRecursive();
+    printf("Sorted List (Recursive):\n");
+    display();
 
     return 0;
 }
