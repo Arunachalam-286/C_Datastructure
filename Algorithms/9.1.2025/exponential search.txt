@@ -1,0 +1,125 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+} *head = NULL;
+
+void append(int val) {
+    struct Node *newnode = (struct Node *)malloc(sizeof(struct Node));
+    newnode->data = val;
+    newnode->next = NULL;
+
+    if (head == NULL) {
+        head = newnode;
+    } else {
+        struct Node *temp = head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newnode;
+    }
+}
+
+void display() {
+    struct Node *temp = head;
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+// Utility function to get a node at a specific index
+struct Node *getNodeAt(int index) {
+    struct Node *temp = head;
+    for (int i = 0; i < index && temp != NULL; i++) {
+        temp = temp->next;
+    }
+    return temp;
+}
+
+// Binary Search in a range
+struct Node *binarySearch(struct Node *low, struct Node *high, int key) {
+    while (low != NULL && low != high->next) {
+        struct Node *mid = low;
+        struct Node *temp = low;
+        int count = 0;
+        
+        // Find the middle node
+        while (temp != high->next) {
+            temp = temp->next;
+            if (count % 2 == 1)
+                mid = mid->next;
+            count++;
+        }
+
+        if (mid->data == key) {
+            return mid;
+        } else if (mid->data < key) {
+            low = mid->next;
+        } else {
+            high = mid;
+        }
+    }
+    return NULL;
+}
+
+// Exponential Search
+struct Node *exponentialSearch(int key) {
+    if (head == NULL) {
+        return NULL;
+    }
+
+    if (head->data == key) {
+        return head;
+    }
+
+    int index = 1;
+    struct Node *prev = head;
+    struct Node *curr = getNodeAt(index);
+
+    // Find the range
+    while (curr != NULL && curr->data < key) {
+        prev = curr;
+        index *= 2;
+        curr = getNodeAt(index);
+    }
+
+    // Perform Binary Search in the found range
+    return binarySearch(prev, curr ? curr : getNodeAt(index / 2), key);
+}
+
+int main() {
+    int val, key;
+
+    // Input the linked list
+    printf("Enter sorted linked list elements (-1 to stop):\n");
+    do {
+        scanf("%d", &val);
+        if (val != -1) {
+            append(val);
+        }
+    } while (val != -1);
+
+    // Display the linked list
+    printf("Linked List: ");
+    display();
+
+    // Input the key to search
+    printf("Enter the key to search: ");
+    scanf("%d", &key);
+
+    // Perform Exponential Search
+    struct Node *result = exponentialSearch(key);
+
+    // Output the result
+    if (result != NULL) {
+        printf("Element %d found in the linked list.\n", result->data);
+    } else {
+        printf("Element %d not found in the linked list.\n", key);
+    }
+
+    return 0;
+}

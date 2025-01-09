@@ -1,0 +1,77 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+} *head = NULL;
+
+void append(int val) {
+    //1.create a memory for the node
+    struct Node *newnode = (struct Node*)malloc(sizeof(struct Node));
+    //2.initialize the node memory
+    newnode->data = val;
+    newnode->next = NULL;
+    //3. connection
+    // check for first node connection (head to first node)
+    if(head == NULL) {
+        head = newnode;
+    } 
+    // (lastnode to newnode connection)
+    else {
+        struct Node *temp = head;
+        // to find last node
+        while(temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newnode;
+    }
+}
+
+void display() {
+    struct Node *temp = head;
+    while(temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+// Linear Search function
+int linearSearch(int key) {
+    struct Node *temp = head;
+    int position = 1; // Position starts at 1
+    while(temp != NULL) {
+        if(temp->data == key) {
+            return position; // Return the position if the key is found
+        }
+        temp = temp->next;
+        position++;
+    }
+    return -1; // Return -1 if the key is not found
+}
+
+int main() {
+    int val, key, result;
+    printf("Enter values to append to the linked list (enter -1 to stop):\n");
+    do {
+        scanf("%d", &val);
+        if(val != -1)
+            append(val);
+    } while(val != -1);
+
+    printf("Linked List: ");
+    display();
+
+    printf("Enter the value to search: ");
+    scanf("%d", &key);
+
+    result = linearSearch(key);
+    if(result != -1) {
+        printf("Value %d found at position %d.\n", key, result);
+    } else {
+        printf("Value %d not found in the linked list.\n", key);
+    }
+
+    return 0;
+}

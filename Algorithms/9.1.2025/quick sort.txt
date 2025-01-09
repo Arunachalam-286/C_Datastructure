@@ -1,0 +1,129 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+// Node structure
+struct Node {
+    int data;
+    struct Node *next;
+} *head = NULL;
+
+// Function to append a new node to the linked list
+void append(int val) {
+    struct Node *newnode = (struct Node *)malloc(sizeof(struct Node));
+    newnode->data = val;
+    newnode->next = NULL;
+
+    if (head == NULL) {
+        head = newnode;
+    } else {
+        struct Node *temp = head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newnode;
+    }
+}
+
+// Function to display the linked list
+void display() {
+    struct Node *temp = head;
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+// Function to get the tail node of the linked list
+struct Node* getTail(struct Node* node) {
+    while (node != NULL && node->next != NULL) {
+        node = node->next;
+    }
+    return node;
+}
+
+// Partition function for Quick Sort
+struct Node* partition(struct Node* start, struct Node* end, struct Node** newHead, struct Node** newEnd) {
+    struct Node* pivot = end;
+    struct Node *prev = NULL, *cur = start, *tail = pivot;
+
+    // Initialize new head and end
+    *newHead = NULL;
+    *newEnd = pivot;
+
+    while (cur != pivot) {
+        if (cur->data < pivot->data) {
+            if (*newHead == NULL)
+                *newHead = cur;
+
+            prev = cur;
+            cur = cur->next;
+        } else {
+            if (prev)
+                prev->next = cur->next;
+            struct Node* temp = cur->next;
+            cur->next = NULL;
+            tail->next = cur;
+            tail = cur;
+            cur = temp;
+        }
+    }
+
+    if (*newHead == NULL)
+        *newHead = pivot;
+
+    *newEnd = tail;
+
+    return pivot;
+}
+
+// Quick Sort function
+struct Node* quickSortRecur(struct Node* head, struct Node* end) {
+    if (!head || head == end)
+        return head;
+
+    struct Node *newHead = NULL, *newEnd = NULL;
+
+    struct Node* pivot = partition(head, end, &newHead, &newEnd);
+
+    if (newHead != pivot) {
+        struct Node* temp = newHead;
+        while (temp->next != pivot)
+            temp = temp->next;
+        temp->next = NULL;
+
+        newHead = quickSortRecur(newHead, temp);
+
+        temp = getTail(newHead);
+        temp->next = pivot;
+    }
+
+    pivot->next = quickSortRecur(pivot->next, newEnd);
+
+    return newHead;
+}
+
+// Wrapper function for Quick Sort
+void quickSort() {
+    head = quickSortRecur(head, getTail(head));
+}
+
+// Main function
+int main() {
+    int val;
+    do {
+        scanf("%d", &val);
+        if (val != -1)
+            append(val);
+    } while (val != -1);
+
+    printf("Original List:\n");
+    display();
+
+    quickSort();
+
+    printf("Sorted List:\n");
+    display();
+
+    return 0;
+}
