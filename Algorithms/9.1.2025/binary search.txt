@@ -1,0 +1,122 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+} *head = NULL;
+
+// Append function
+void append(int val) {
+    struct Node *newnode = (struct Node*)malloc(sizeof(struct Node));
+    newnode->data = val;
+    newnode->next = NULL;
+    if (head == NULL) {
+        head = newnode;
+    } else {
+        struct Node *temp = head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newnode;
+    }
+}
+
+// Display function
+void display() {
+    struct Node *temp = head;
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+// Sort the linked list (Bubble Sort for simplicity)
+void sortList() {
+    struct Node *i, *j;
+    int temp;
+    for (i = head; i != NULL; i = i->next) {
+        for (j = i->next; j != NULL; j = j->next) {
+            if (i->data > j->data) {
+                temp = i->data;
+                i->data = j->data;
+                j->data = temp;
+            }
+        }
+    }
+}
+
+// Get the node at a specific index
+struct Node* getNodeAt(int index) {
+    struct Node *temp = head;
+    for (int i = 0; i < index && temp != NULL; i++) {
+        temp = temp->next;
+    }
+    return temp;
+}
+
+// Count the number of nodes in the list
+int countNodes() {
+    int count = 0;
+    struct Node *temp = head;
+    while (temp != NULL) {
+        count++;
+        temp = temp->next;
+    }
+    return count;
+}
+
+// Binary Search
+int binarySearch(int target) {
+    int left = 0;
+    int right = countNodes() - 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        struct Node *midNode = getNodeAt(mid);
+
+        if (midNode == NULL) break; // Safety check
+
+        if (midNode->data == target) {
+            return mid; // Target found
+        } else if (midNode->data < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    return -1; // Target not found
+}
+
+int main() {
+    int val, target;
+
+    // Input and append
+    do {
+        scanf("%d", &val);
+        if (val != -1)
+            append(val);
+    } while (val != -1);
+
+    // Sort the list
+    sortList();
+
+    // Display sorted list
+    printf("Sorted List: ");
+    display();
+
+    // Input target value
+    printf("Enter the value to search: ");
+    scanf("%d", &target);
+
+    // Perform binary search
+    int result = binarySearch(target);
+    if (result != -1) {
+        printf("Element found at index %d\n", result);
+    } else {
+        printf("Element not found\n");
+    }
+
+    return 0;
+}

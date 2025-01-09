@@ -1,0 +1,129 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+} *head = NULL;
+
+void append(int val) {
+    struct Node *newnode = (struct Node*)malloc(sizeof(struct Node));
+    newnode->data = val;
+    newnode->next = NULL;
+
+    if (head == NULL) {
+        head = newnode;
+    } else {
+        struct Node *temp = head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newnode;
+    }
+}
+
+void display() {
+    struct Node *temp = head;
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+// Function to convert linked list to array
+int* linkedListToArray(int *size) {
+    struct Node *temp = head;
+    int count = 0;
+
+    // Count the number of nodes
+    while (temp != NULL) {
+        count++;
+        temp = temp->next;
+    }
+
+    *size = count;
+    int *arr = (int*)malloc(count * sizeof(int));
+    temp = head;
+
+    // Copy data into the array
+    for (int i = 0; i < count; i++) {
+        arr[i] = temp->data;
+        temp = temp->next;
+    }
+
+    return arr;
+}
+
+// Function to perform interpolation search
+int interpolationSearch(int arr[], int n, int x) {
+    int low = 0, high = n - 1;
+
+    while (low <= high && x >= arr[low] && x <= arr[high]) {
+        if (low == high) {
+            if (arr[low] == x) return low;
+            return -1;
+        }
+
+        // Estimate the position
+        int pos = low + ((x - arr[low]) * (high - low)) / (arr[high] - arr[low]);
+
+        // Check if x is at pos
+        if (arr[pos] == x) return pos;
+
+        // Narrow down the search range
+        if (arr[pos] < x) low = pos + 1;
+        else high = pos - 1;
+    }
+    return -1;
+}
+
+int main() {
+    int val;
+    printf("Enter elements of the linked list (-1 to end):\n");
+    do {
+        scanf("%d", &val);
+        if (val != -1) append(val);
+    } while (val != -1);
+
+    printf("Original Linked List:\n");
+    display();
+
+    // Convert linked list to array and sort it
+    int size;
+    int *arr = linkedListToArray(&size);
+
+    // Sort the array
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = i + 1; j < size; j++) {
+            if (arr[i] > arr[j]) {
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+    }
+
+    printf("Sorted Array:\n");
+    for (int i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    // Perform interpolation search
+    int key;
+    printf("Enter element to search: ");
+    scanf("%d", &key);
+
+    int index = interpolationSearch(arr, size, key);
+    if (index != -1) {
+        printf("Element %d found at index %d in the sorted array.\n", key, index);
+    } else {
+        printf("Element %d not found.\n", key);
+    }
+
+    // Free the allocated memory
+    free(arr);
+
+    return 0;
+}
