@@ -1,0 +1,76 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+}*head = NULL;
+
+void append(int val) {
+    //1.create a memory for the node
+    struct Node *newnode = (struct Node*)malloc(sizeof(struct Node));
+    //2.initialize the node memory
+    newnode->data = val;
+    newnode->next = NULL;
+    //3. connection
+    // check for first node connection (head to first node)
+    if(head == NULL) {
+        head = newnode;
+    } else {
+        struct Node *temp = head;
+        // to find last node
+        while(temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newnode;
+    }
+}
+
+void display() {
+    struct Node *temp = head;
+    while(temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+void selectionSort() {
+    struct Node *temp1 = head;
+    while(temp1 != NULL) {
+        struct Node *min = temp1;
+        struct Node *temp2 = temp1->next;
+        while(temp2 != NULL) {
+            if(temp2->data < min->data) {
+                min = temp2;
+            }
+            temp2 = temp2->next;
+        }
+        // Swap data between temp1 and min
+        if(min != temp1) {
+            int temp = temp1->data;
+            temp1->data = min->data;
+            min->data = temp;
+        }
+        temp1 = temp1->next;
+    }
+}
+
+int main() {
+    int val;
+    do {
+        scanf("%d", &val);
+        if(val != -1)
+            append(val);
+    } while(val != -1);
+
+    printf("Original list: \n");
+    display();
+
+    selectionSort();
+
+    printf("Sorted list: \n");
+    display();
+
+    return 0;
+}

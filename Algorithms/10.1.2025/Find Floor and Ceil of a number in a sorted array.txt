@@ -1,0 +1,103 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+struct Node
+{
+    int data;
+    struct Node *next;
+} *head = NULL;
+
+void append(int val)
+{
+    // Create memory for the node
+    struct Node *newnode = (struct Node*)malloc(sizeof(struct Node));
+    // Initialize the node memory
+    newnode->data = val;
+    newnode->next = NULL;
+    // Check for first node connection (head to first node)
+    if (head == NULL)
+    {
+        head = newnode;
+    }
+    // (Last node to new node connection)
+    else
+    {
+        struct Node *temp = head;
+        // To find the last node
+        while (temp->next != NULL)
+        {
+            temp = temp->next;
+        }
+        temp->next = newnode;
+    }
+}
+
+void display()
+{
+    struct Node *temp = head;
+    while (temp != NULL)
+    {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+void findFloorAndCeil(int x)
+{
+    struct Node *temp = head;
+    int floor = -1, ceil = -1;
+
+    // Traverse through the sorted linked list
+    while (temp != NULL)
+    {
+        if (temp->data == x)
+        {
+            printf("Floor: %d, Ceil: %d\n", x, x); // x is both floor and ceil if it's in the list
+            return;
+        }
+        else if (temp->data < x)
+        {
+            floor = temp->data; // floor is the largest element smaller than x
+        }
+        else if (temp->data > x)
+        {
+            ceil = temp->data; // ceil is the smallest element greater than x
+            break; // No need to check further as the list is sorted
+        }
+        temp = temp->next;
+    }
+
+    // Display floor and ceil
+    if (floor == -1)
+        printf("Floor: No smaller element\n");
+    else
+        printf("Floor: %d\n", floor);
+
+    if (ceil == -1)
+        printf("Ceil: No larger element\n");
+    else
+        printf("Ceil: %d\n", ceil);
+}
+
+int main()
+{
+    int val;
+    do
+    {
+        scanf("%d", &val);
+        if (val != -1)
+            append(val);
+    } while (val != -1);
+
+    // The list is assumed to be sorted; display it for verification
+    display();
+
+    // Now, let's test with an example value
+    int x;
+    printf("Enter the value to find the floor and ceil: ");
+    scanf("%d", &x);
+    findFloorAndCeil(x);
+
+    return 0;
+}
