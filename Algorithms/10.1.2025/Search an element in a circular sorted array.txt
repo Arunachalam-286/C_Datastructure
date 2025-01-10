@@ -1,0 +1,89 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+// Define the structure of a node
+struct Node {
+    int data;
+    struct Node *next;
+}*head = NULL;
+
+// Function to append a value to the circular linked list
+void append(int val) {
+    // Create memory for the new node
+    struct Node *newnode = (struct Node*)malloc(sizeof(struct Node));
+    newnode->data = val;
+    newnode->next = NULL;
+
+    if (head == NULL) {
+        // First node case
+        head = newnode;
+        newnode->next = head; // Point to itself to make it circular
+    } else {
+        struct Node *temp = head;
+        while (temp->next != head) { // Traverse until the last node
+            temp = temp->next;
+        }
+        temp->next = newnode; // Connect the last node to the new node
+        newnode->next = head; // Make it circular
+    }
+}
+
+// Function to display the circular linked list
+void display() {
+    if (head == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+
+    struct Node *temp = head;
+    do {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    } while (temp != head);
+    printf("\n");
+}
+
+// Function to search for an element in the circular linked list
+int searchInCircularList(int key) {
+    if (head == NULL) {
+        return 0; // List is empty
+    }
+
+    struct Node *temp = head;
+    do {
+        if (temp->data == key) {
+            return 1; // Element found
+        }
+        temp = temp->next;
+    } while (temp != head);
+
+    return 0; // Element not found
+}
+
+int main() {
+    int val;
+
+    // Input values into the circular linked list until -1 is entered
+    do {
+        scanf("%d", &val);
+        if (val != -1) {
+            append(val);
+        }
+    } while (val != -1);
+
+    // Display the circular linked list
+    display();
+
+    // Search for an element in the list
+    int key;
+    printf("Enter the element to search: ");
+    scanf("%d", &key);
+
+    if (searchInCircularList(key)) {
+        printf("%d is found in the list.\n", key);
+    } else {
+        printf("%d is not found in the list.\n", key);
+    }
+
+    return 0;
+}

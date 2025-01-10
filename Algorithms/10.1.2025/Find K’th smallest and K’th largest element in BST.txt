@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Define Node structure for BST
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+// Function to create a new node
+struct Node* createNode(int val) {
+    struct Node *newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = val;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+// Function to insert a node into BST
+struct Node* insert(struct Node* root, int val) {
+    if (root == NULL) {
+        return createNode(val);
+    }
+    if (val < root->data) {
+        root->left = insert(root->left, val);
+    } else {
+        root->right = insert(root->right, val);
+    }
+    return root;
+}
+
+// Function to perform in-order traversal and find K'th smallest and K'th largest
+void findKthSmallestAndLargest(struct Node* root, int *count, int k, int *kSmallest, int *kLargest) {
+    if (root == NULL || *count >= 2 * k) return;
+    
+    // Traverse left subtree
+    findKthSmallestAndLargest(root->left, count, k, kSmallest, kLargest);
+
+    // Increment count for each node visited in in-order traversal
+    (*count)++;
+
+    // Check for K'th smallest
+    if (*count == k) {
+        *kSmallest = root->data;
+    }
+
+    // Check for K'th largest
+    if (*count == 2 * k) {
+        *kLargest = root->data;
+    }
+
+    // Traverse right subtree
+    findKthSmallestAndLargest(root->right, count, k, kSmallest, kLargest);
+}
+
+// Function to take input values and insert them into BST
+int main() {
+    struct Node *root = NULL;
+    int val, k;
+
+    // Taking input for BST nodes
+    printf("Enter values for BST (enter -1 to stop):\n");
+    do {
+        scanf("%d", &val);
+        if (val != -1) {
+            root = insert(root, val);
+        }
+    } while (val != -1);
+
+    // Taking input for K
+    printf("Enter the value of K: ");
+    scanf("%d", &k);
+
+    // Find K'th smallest and K'th largest elements
+    int count = 0, kSmallest = -1, kLargest = -1;
+    findKthSmallestAndLargest(root, &count, k, &kSmallest, &kLargest);
+
+    // Output the results
+    if (kSmallest != -1) {
+        printf("K'th smallest element is: %d\n", kSmallest);
+    } else {
+        printf("K'th smallest element does not exist.\n");
+    }
+
+    if (kLargest != -1) {
+        printf("K'th largest element is: %d\n", kLargest);
+    } else {
+        printf("K'th largest element does not exist.\n");
+    }
+
+    return 0;
+}

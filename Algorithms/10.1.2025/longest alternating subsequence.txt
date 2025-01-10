@@ -1,0 +1,78 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+} *head = NULL;
+
+void append(int val) {
+    struct Node *newnode = (struct Node*)malloc(sizeof(struct Node));
+    newnode->data = val;
+    newnode->next = NULL;
+
+    if (head == NULL) {
+        head = newnode;
+    } else {
+        struct Node *temp = head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newnode;
+    }
+}
+
+void display() {
+    struct Node *temp = head;
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+int longestAlternatingSubsequence() {
+    if (head == NULL || head->next == NULL) {
+        return 0; // No subsequence possible if less than 2 elements
+    }
+
+    struct Node *curr = head;
+    int maxLength = 1;
+    int currLength = 1;
+    int prev_diff = 0;
+
+    while (curr != NULL && curr->next != NULL) {
+        int diff = curr->next->data - curr->data;
+
+        // If the difference has opposite sign, it alternates
+        if ((prev_diff >= 0 && diff < 0) || (prev_diff <= 0 && diff > 0)) {
+            currLength++;
+        } else {
+            currLength = 2; // Start a new subsequence
+        }
+
+        prev_diff = diff;
+        maxLength = (currLength > maxLength) ? currLength : maxLength;
+
+        curr = curr->next;
+    }
+
+    return maxLength;
+}
+
+int main() {
+    int val;
+    do {
+        scanf("%d", &val);
+        if (val != -1) {
+            append(val);
+        }
+    } while (val != -1);
+
+    display();
+
+    int result = longestAlternatingSubsequence();
+    printf("Longest alternating subsequence length: %d\n", result);
+
+    return 0;
+}

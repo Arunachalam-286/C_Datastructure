@@ -1,0 +1,115 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Node {
+    int data;
+    struct Node *next;
+} *head = NULL;
+
+void append(int val) {
+    struct Node *newnode = (struct Node *)malloc(sizeof(struct Node));
+    newnode->data = val;
+    newnode->next = NULL;
+    if (head == NULL) {
+        head = newnode;
+    } else {
+        struct Node *temp = head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newnode;
+    }
+}
+
+void display() {
+    struct Node *temp = head;
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+struct Frequency {
+    int data;
+    int freq;
+    int index;
+};
+
+// Helper function to sort elements by frequency and index
+int compare(const void *a, const void *b) {
+    struct Frequency *f1 = (struct Frequency *)a;
+    struct Frequency *f2 = (struct Frequency *)b;
+    if (f1->freq != f2->freq) {
+        return f2->freq - f1->freq; // Descending frequency
+    }
+    return f1->index - f2->index; // Ascending index
+}
+
+void sortByFrequencyAndIndex() {
+    if (head == NULL) return;
+
+    // Count frequencies and maintain original indices
+    struct Node *temp = head;
+    int map[1000] = {0}; // Assuming values are <= 1000
+    int visited[1000] = {0};
+    int totalNodes = 0;
+
+    // Find total nodes and frequencies
+    while (temp != NULL) {
+        map[temp->data]++;
+        temp = temp->next;
+        totalNodes++;
+    }
+
+    // Create an array for sorting
+    struct Frequency freqArray[totalNodes];
+    temp = head;
+    int i = 0, idx = 0;
+
+    while (temp != NULL) {
+        if (!visited[temp->data]) {
+            freqArray[i].data = temp->data;
+            freqArray[i].freq = map[temp->data];
+            freqArray[i].index = idx;
+            visited[temp->data] = 1;
+            i++;
+        }
+        temp = temp->next;
+        idx++;
+    }
+
+    int uniqueElements = i;
+
+    // Sort based on frequency and index
+    qsort(freqArray, uniqueElements, sizeof(struct Frequency), compare);
+
+    // Rebuild the linked list
+    head = NULL;
+    for (int j = 0; j < uniqueElements; j++) {
+        for (int k = 0; k < freqArray[j].freq; k++) {
+            append(freqArray[j].data);
+        }
+    }
+}
+
+int main() {
+    int val;
+    printf("Enter elements (-1 to end):\n");
+    do {
+        scanf("%d", &val);
+        if (val != -1)
+            append(val);
+    } while (val != -1);
+
+    printf("Original list:\n");
+    display();
+
+    sortByFrequencyAndIndex();
+
+    printf("Sorted by frequency and index:\n");
+    display();
+
+    return 0;
+}
